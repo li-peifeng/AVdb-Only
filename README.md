@@ -1,5 +1,6 @@
 <p align="center">
-  <img width="184px" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/avdb-only/public/logo.svg" />
+  <img width="256px" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/avdb-only/public/logo.svg" />
+  
 </p>
 <p align="center">
   <a href="https://hub.docker.com/r/leolitaly/avdb">
