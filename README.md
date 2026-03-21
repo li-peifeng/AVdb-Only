@@ -1,6 +1,5 @@
 <p align="center">
-  <a href="https://peifeng.li"><img width="184px" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/avdb-only/public/logo.svg" />
-  </a>
+  <img width="184px" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/avdb-only/public/logo.svg" />
 </p>
 <p align="center">
   <a href="https://hub.docker.com/r/leolitaly/avdb">
