@@ -90,7 +90,7 @@ https://t.me/leoavdb
 
 你可以送我一杯咖啡，以表示对这个项目的支持和喜爱🥰🥰🥰
 
-[![PayPal](public/paypal.jpeg)](https://www.paypal.me/3319999977)
+[![PayPal](public/paypal.jpeg =500x)](https://www.paypal.me/3319999977)
 
 
 
