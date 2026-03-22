@@ -88,7 +88,7 @@ https://t.me/leoavdb
 
 ## 支持一下
 
-你可以送我一杯咖啡，以表示对这个项目的支持和喜爱🥰🥰🥰
+你可以请喝杯咖啡，以表示对这个项目的支持和喜爱🥰
 
 <a href="https://www.paypal.me/3319999977">
   <img src="public/paypal.jpeg" alt="PayPal" width="500" style="max-width: 500px;">
