@@ -1,0 +1,32 @@
+services:
+  avdb:
+    image: leolitaly/avdb:latest
+    container_name: avdb
+    restart: unless-stopped
+    network_mode: bridge
+    ports:
+      - 8000:8000
+    volumes:
+      - ./data:/data
+    environment:
+      # 默认：SQLite（开箱即用）
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/avdb.db}
+
+      # PostgreSQL 示例（如需切换，取消注释并填写）
+      # - DATABASE_URL=postgresql://avdb:change_me@postgres:5432/avdb
+      # - POSTGRES_HOST=postgres
+      # - POSTGRES_PORT=5432
+      # - POSTGRES_USER=avdb
+      # - POSTGRES_PASSWORD=change_me
+      # - POSTGRES_DB=avdb
+
+  postgres:
+    image: postgres:16
+    container_name: avdb-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=avdb
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
