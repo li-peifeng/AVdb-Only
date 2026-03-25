@@ -1,4 +1,4 @@
-ip align="center">
+<p align="center">
   <a href="https://peifeng.li"><img width="184px" alt="logo" src="public/logo.svg" />
   </a>
 </p>
