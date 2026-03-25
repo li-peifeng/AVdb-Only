@@ -158,7 +158,7 @@ services:
       - POSTGRES_DB=
 ```
 
-提示：首次启动后可在日志中确认方言（sqlite/postgresql）是否符合预期。
+提示：首次启动后可在日志中确认（sqlite/postgresql）是否符合预期。
 
 仓库已内置可直接运行的 [docker-compose.yml](docker-compose.yml)：
 
