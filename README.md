@@ -1,6 +1,6 @@
 <p align="center">
-  <img width="320" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/avdb-only/public/logo.svg" />
-  
+  <a href="https://peifeng.li"><img width="184px" alt="logo" src="https://cdn.jsdelivr.net/gh/li-peifeng/static/logo.png" />
+  </a>
 </p>
 <p align="center">
   <a href="https://hub.docker.com/r/leolitaly/avdb">
@@ -62,6 +62,105 @@ Avdb 是一个面向个人影视资源管理的全流程自动化系统，覆盖
 - 数据库：PostgreSQL（推荐）/ SQLite（可选）
 - 前端：React + Vite + TanStack Router + Tailwind CSS（独立仓库 Avdb-UI）
 - 下载协议与三方集成：qBittorrent、Transmission、迅雷、CloudDrive/115、Emby
+
+## 数据库配置（PostgreSQL / SQLite）
+
+项目支持 PostgreSQL 与 SQLite 两种数据库。
+
+- 生产环境推荐 PostgreSQL（并发与维护能力更好）。
+- 轻量部署或单机测试可直接使用 SQLite。
+
+配置文件为 `data/app.env`，当同时配置了 `DATABASE_URL` 与 `POSTGRES_*` 时，优先使用 `DATABASE_URL`。
+
+### PostgreSQL 示例
+
+```env
+POSTGRES_HOST=10.0.0.8
+POSTGRES_PORT=5433
+POSTGRES_USER=avdb
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=avdb
+DATABASE_URL=postgresql://avdb:your_password@10.0.0.3:5433/avdb
+```
+
+### SQLite 示例
+
+```env
+# 使用 SQLite 时，直接填写 DATABASE_URL 即可
+DATABASE_URL=sqlite:///./data/avdb.db
+
+# 可留空（或移除）POSTGRES_* 配置
+POSTGRES_HOST=
+POSTGRES_PORT=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+```
+
+### 切换建议
+
+- 从 PostgreSQL 切到 SQLite：建议使用独立数据库文件，避免混用旧数据。
+- 从 SQLite 切到 PostgreSQL：建议先全量导出/迁移数据后再切换生产环境。
+- 首次切换后，建议启动一次服务并观察日志中数据库方言输出是否符合预期。
+
+## Docker Compose 部署示例
+
+如果你使用 Docker 部署，推荐使用下面两种 compose 方式之一。
+
+### 方式 1：SQLite（最简单）
+
+```yaml
+services:
+  avdb:
+    image: leolitaly/avdb:latest
+    container_name: avdb
+    network_mode: bridge
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/avdb.db
+```
+
+### 方式 2：PostgreSQL（推荐使用）
+
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=avdb
+      - POSTGRES_PASSWORD=change_me
+      - POSTGRES_DB=avdb
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  avdb:
+    image: leolitaly/avdb:latest
+    container_name: avdb
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+    environment:
+      - DATABASE_URL=postgresql://avdb:change_me@postgres:5432/avdb
+      # 下面这组可留空；若同时配置，程序优先使用 DATABASE_URL
+      - POSTGRES_HOST=
+      - POSTGRES_PORT=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=
+```
+
+提示：首次启动后可在日志中确认方言（sqlite/postgresql）是否符合预期。
+
+仓库已内置可直接运行的 [docker-compose.yml](docker-compose.yml)：
 
 ## 典型使用流程
 
