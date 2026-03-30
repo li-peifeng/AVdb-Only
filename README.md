@@ -180,7 +180,7 @@ services:
 
 ## Telegram 交流群
 
-https://t.me/leoavdb
+https://t.me/my_avdb
 
 ## 免责声明
 
