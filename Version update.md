@@ -10,7 +10,7 @@
 
 ## AVdb 更新日志
 
-### 日志非实时更新，详情请至 [AVdb](https://t.me/my_avdb)
+### 日志非实时更新，详情请至 [AVdb](https://t.me/avdb_chat)
 
 ##
 ### 20260331-2121
