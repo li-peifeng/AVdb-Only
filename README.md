@@ -121,7 +121,7 @@ services:
     volumes:
       - ./data:/data
     environment:
-      - DATABASE_URL=sqlite:///./data/avdb.db
+      - DATABASE_URL=sqlite:////data/avdb.db
 ```
 
 ### 方式 2：PostgreSQL（推荐使用）
