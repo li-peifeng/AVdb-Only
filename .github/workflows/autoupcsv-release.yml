@@ -14,8 +14,7 @@ concurrency:
 
 env:
   BASE_URL: https://webdav.peifeng.li/docker/AutoUpCsv/
-  # Optional: set this repository variable if auto-discovery is not stable.
-  # Example: db-a.zip,db-b.zip
+  # Optional override. Auto-discovery supports URL-encoded names like %E8%89%B2%E8%8A%B1%E5%A0%82_312896_2026-06-07.zip.
   ZIP_FILE_NAMES: ${{ vars.AUTOUPCSV_ZIP_FILE_NAMES }}
 
 jobs:
@@ -135,9 +134,7 @@ jobs:
           tag_name: ${{ steps.scan.outputs.tag }}
           name: AutoUpCsv ${{ steps.scan.outputs.tag }}
           body: |
-            Auto-generated release from WebDAV source.
-
-            Source URL: ${{ env.BASE_URL }}
+            Auto-generated release from AVdb.
             Name fingerprint: ${{ steps.scan.outputs.names_fingerprint }}
 
             File names:
