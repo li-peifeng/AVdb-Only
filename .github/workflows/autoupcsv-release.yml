@@ -2,7 +2,7 @@ name: AutoUpCsv Release
 
 on:
   schedule:
-    - cron: "5 * * * *"
+    - cron: "20 * * * *"
   workflow_dispatch:
 
 permissions:
