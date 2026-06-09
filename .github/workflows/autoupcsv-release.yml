@@ -2,7 +2,7 @@ name: AutoUpCsv Release
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -218,9 +218,15 @@ jobs:
       - name: Summary
         shell: bash
         run: |
+          trigger_source="${{ github.event_name }}"
+          if [[ "$trigger_source" == "workflow_dispatch" ]]; then
+            trigger_source="manual"
+          fi
+
           {
             echo "## AutoUpCsv check result"
             echo
+            echo "- Trigger source: ${trigger_source}"
             echo "- Tag: ${{ steps.scan.outputs.tag }}"
             echo "- Name fingerprint: ${{ steps.scan.outputs.names_fingerprint }}"
             echo "- Created release: ${{ steps.dedupe.outputs.should_release }}"
