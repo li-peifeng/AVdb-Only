@@ -132,6 +132,7 @@ jobs:
           echo "release_name=AutoUpCsv-${short_tag}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release and upload assets
+        id: publish
         if: steps.dedupe.outputs.should_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
@@ -153,18 +154,43 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.scan.outputs.tag }}
+          RELEASE_ID: ${{ steps.publish.outputs.id }}
         shell: bash
         run: |
           set -euo pipefail
 
-          if gh release edit "$TAG" --latest; then
-            echo "Marked $TAG as latest via gh release edit"
-            exit 0
+          release_id="${RELEASE_ID:-}"
+
+          if [[ -z "$release_id" ]]; then
+            for attempt in 1 2 3 4 5; do
+              release_id="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.id' 2>/dev/null || true)"
+              if [[ -n "$release_id" ]]; then
+                break
+              fi
+              echo "Tag $TAG not discoverable yet (attempt $attempt/5), retrying..."
+              sleep 4
+            done
           fi
 
-          release_id="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq '.id')"
+          if [[ -z "$release_id" ]]; then
+            echo "Unable to resolve release id for $TAG" >&2
+            exit 1
+          fi
+
           gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${release_id}" -f make_latest=true >/dev/null
-          echo "Marked $TAG as latest via API fallback"
+
+          for attempt in 1 2 3 4 5 6; do
+            latest_tag="$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" --jq '.tag_name' 2>/dev/null || true)"
+            if [[ "$latest_tag" == "$TAG" ]]; then
+              echo "Marked $TAG as latest (release id: $release_id)"
+              exit 0
+            fi
+            echo "Latest is still '$latest_tag' (expect '$TAG'), retrying... (attempt $attempt/6)"
+            sleep 5
+          done
+
+          echo "Failed to verify latest points to $TAG after retries" >&2
+          exit 1
 
       - name: Cleanup old AutoUpCsv releases (keep latest 1)
         id: cleanup
