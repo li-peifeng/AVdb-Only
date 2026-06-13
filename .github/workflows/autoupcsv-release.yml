@@ -1,4 +1,4 @@
-name: AutoUpCsv Release
+name: AVdb-CSV Release
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: autoupcsv-release
+  group: AVdb-CSV-release
   cancel-in-progress: false
 
 jobs:
@@ -62,7 +62,7 @@ jobs:
           
           # Generate timestamp in YYYY-MM-DD-HH-MM-SS format
           timestamp="$(date -u +'%Y-%m-%d-%H-%M-%S')"
-          tag="autoupcsv-${timestamp}"
+          tag="${timestamp}"
           zip_names_csv="$(IFS=,; echo "${sorted[*]}")"
 
           {
@@ -130,7 +130,7 @@ jobs:
         run: |
           set -euo pipefail
           timestamp="${{ steps.scan.outputs.timestamp }}"
-          echo "release_name=AutoUpCsv-${timestamp}" >> "$GITHUB_OUTPUT"
+          echo "release_name=${timestamp}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release and upload assets
         id: publish
@@ -150,7 +150,7 @@ jobs:
             ${{ steps.scan.outputs.asset_glob }}
           fail_on_unmatched_files: true
 
-      - name: Cleanup old AutoUpCsv releases (keep latest 1)
+      - name: Cleanup old AVdb-CSV releases (keep latest 1)
         id: cleanup
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -159,8 +159,8 @@ jobs:
           set -euo pipefail
 
           mapfile -t tags_to_delete < <(
-            gh release list --limit 100 --json tagName,createdAt \
-              --jq 'map(select(.tagName | startswith("autoupcsv-"))) | sort_by(.createdAt) | reverse | .[1:] | .[].tagName'
+            gh release list --limit 100 --json tagName,createdAt,body \
+              --jq 'map(select(.body | contains("指纹验证: "))) | sort_by(.createdAt) | reverse | .[1:] | .[].tagName'
           )
 
           deleted=0
@@ -173,7 +173,7 @@ jobs:
           echo "deleted_count=$deleted" >> "$GITHUB_OUTPUT"
           echo "Deleted old releases: $deleted"
 
-      - name: Force latest on current AutoUpCsv release
+      - name: Force latest on current AVdb-CSV release
         if: steps.dedupe.outputs.should_release == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -225,7 +225,7 @@ jobs:
           fi
 
           {
-            echo "## AutoUpCsv check result"
+            echo "## AVdb-CSV check result"
             echo
             echo "- Trigger source: ${trigger_source}"
             echo "- Tag: ${{ steps.scan.outputs.tag }}"
