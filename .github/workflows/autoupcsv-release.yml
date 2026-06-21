@@ -54,10 +54,10 @@ jobs:
             exit 1
           fi
 
-          recent_count="$(printf '%s\n' "${names[@]}" | grep -Ec '^10D_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$' || true)"
+          recent_count="$(printf '%s\n' "${names[@]}" | grep -Ec '^30D_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$' || true)"
           all_count="$(printf '%s\n' "${names[@]}" | grep -Ec '^All_.*\.zip$' || true)"
           if [[ "$recent_count" -ne 1 || "$all_count" -ne 2 ]]; then
-            echo "Expected one 10D_ zip and two All_ zips, found recent=${recent_count}, all=${all_count}: ${names[*]}" >&2
+            echo "Expected one 30D_ zip and two All_ zips, found recent=${recent_count}, all=${all_count}: ${names[*]}" >&2
             exit 1
           fi
 
@@ -149,6 +149,7 @@ jobs:
           make_latest: true
           body: |
             AVdb 自动上传生成的最新资源库版本.
+            30D 文件包含最近30天的增量更新, All 文件包含全部数据.
             指纹验证: ${{ steps.scan.outputs.names_fingerprint }}
 
             文件列表:
