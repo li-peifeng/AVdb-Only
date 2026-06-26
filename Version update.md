@@ -14,6 +14,55 @@
 
 ##
 
+### 20260626-2356
+
+• 后端 actor 表新增 bio_graphy TEXT 字段，并加入启动时自动补列逻辑。
+
+• 演员映射 XML 导入/导出支持可选 bio_graphy：
+    • 导入时  bio_graphy="..." 有值才写入。
+    • 已有记录无简介时补齐；在线/verified 数据可覆盖。
+    • 导出时只有 bio_graphy 非空才输出该属性。
+
+• 演员信息补全逻辑已调整：
+    • 命中演员映射表的名字/别名时，优先使用映射表里的 tmdb_id 和 bio_graphy。
+    • 映射表缺简介时，才使用映射到的 TMDB ID 去 TMDB 拉简介。
+    • 图片仍按原流程从 TMDB 获取，TMDB 没头像时继续走原来的 Graphis/Gfriends fallback。
+
+• 设置页 设置 -> 数据库 的“自动更新资源库”卡片改成“自动更新”，新增“自动更新演员映射表”开关和时间选项，
+
+• 后端新增 Database.AutoUpdateActorMapping 配置，保存后会重置定时任务；不再固定每日自动同步演员映射表，改为由开关控制。
+
+现有导入/导出优先级和步骤：
+
+• 记录匹配优先按日文名、简中名、繁中名建立身份索引；有 TMDB ID 时再按 TMDB ID 合并。
+
+• 普通导入/在线导入会合并别名和关键字；已有主名称一般不被空值覆盖。
+
+• verified=1 或更高来源优先级的数据可覆盖/提升 TMDB 信息。
+
+• TMDB 来源优先级为 online > import > mapping > emby。
+
+• bio_graphy 有值才参与导入；没有值不会清空已有简介。
+
+• 导出会输出当前演员映射表、黑名单；每个字段只有有值才写入 XML 属性。
+
+信息补全详细逻辑：
+
+• 先读取 Emby 人物详情，判断是否需要头像、简介、TMDB ID。
+
+• 匹配演员映射表：按 jp -> zh_cn -> zh_tw -> keyword，先精确再大小写折叠。
+
+• 如果映射表命中且有 TMDB ID：
+    • 需要写 ID 时直接使用映射表 ID。
+    • 需要简介且映射表有 bio_graphy 时直接使用映射表简介。
+    • 映射表无简介时才请求 TMDB 获取简介。
+
+• 头像始终使用原 TMDB 图片流程：用最终 TMDB ID 查头像并上传；失败后按原逻辑尝试 Graphis/Gfriends。
+
+• 映射表没命中时，继续走原来的现有 TMDB ID 校验、TMDB 搜索和 fallback 逻辑。
+
+##
+
 ### 20260625-2129
 
 • 演员映射导入/在线更新时，verified=true 才覆盖 zh_cn / zh_tw / jp、keyword、tmdb_id；非 verified 只做补全和追加。
