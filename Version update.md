@@ -14,6 +14,20 @@
 
 ##
 
+### 20260703-0010
+
+• 添加 MDC-NG 演员映射表的自动导入及覆盖。
+
+需要在 compose 的 volume 下添加
+
+- ./mdcng/data:/mdcng/data
+- /var/run/docker.sock:/var/run/docker.sock
+
+./mdcng/data:/mdcng/data 这个一定要和 mdcng 里的 config 保持一致，不然会覆盖失败
+/var/run/docker.sock:/var/run/docker.sock 这个是执行 docker 重启的
+
+##
+
 ### 20260702-1503
 
 演员映射表添加 MDC-NG 导出方案，可直接给 mdc-ng 使用
