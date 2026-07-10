@@ -14,6 +14,40 @@
 
 ##
 
+### 20260711-0052
+
+- 过盾改用 TRAWL，彻底删除 Flaresolverr， 需要自己爬取的需要部署 TRAWL， 地址端口和原来一样（v1 不需要，会自动修改）, 如果只是AVDB的话不需要 redis， 已支持 cookie 复用。
+
+docker-compose
+
+```yaml
+services:
+  trawl:
+    image: ghcr.io/germondai/trawl:latest
+    container_name: trawl
+    restart: always
+    ports:
+      - "${PORT:-8191}:8191"
+    shm_size: 1gb
+    mem_limit: 2g # 按需修改
+    environment:
+      BROWSER_POOL_SIZE: 1
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://trawl:8191/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    networks:
+      - isweet
+
+networks:
+  isweet:
+    external: true
+```
+
+##
+
 ### 20260710-1907
 
 修复重名检测/合并时分集未同步的问题
