@@ -1,203 +1,62 @@
 <p align="center">
-  <a href="https://peifeng.li"><img width="184px" alt="logo" src="public/logo.svg" />
-  </a>
+  <a href="https://peifeng.li"><img width="184" alt="AVDB logo" src="public/logo.svg" /></a>
 </p>
 <p align="center">
-  <a href="https://hub.docker.com/r/leolitaly/avdb">
-    <img src="https://img.shields.io/docker/pulls/leolitaly/avdb?color=#48BB78&logo=docker&label=pulls" alt="Downloads" />
-  </a>
+  <a href="https://hub.docker.com/r/leolitaly/avdb"><img src="https://img.shields.io/docker/pulls/leolitaly/avdb?color=%2348BB78&logo=docker&label=pulls" alt="Docker pulls" /></a>
 </p>
 
 # Avdb
 
-Avdb 是一个面向个人影视资源管理的全流程自动化系统，覆盖「站点采集 -> 规则筛选 -> 下载入库 -> Emby 联动 -> 消息通知 -> 可视化管理」。
-
-项目由 Python FastAPI 后端与 React 前端组成，支持本地部署与 Docker 部署，适合长期运行和定时任务场景。
+Avdb 是面向个人影视资源管理的全流程自动化系统，覆盖「站点采集 → 规则筛选 → 下载入库 → Emby 联动 → 消息通知 → 可视化管理」。
 
 ## 核心特色
 
-### 1. 双站点采集引擎（智能增量 + 全量）
-- 内置 色花堂 / X1080X 采集任务。
-- 支持断点续爬（按游标增量）与全量回填两种模式。
-- 支持按版块过滤、并发参数控制、异常重试。
-- 支持爬取完成后自动导出资源库，并仅保留最新一份导出文件，便于归档和快速回滚。
+### 双站点采集引擎
 
-### 2. 规则驱动自动下载
-- 可配置多条规则（版块、分类、关键字、时间窗口等）自动筛选资源。
-- 支持任务编排后按路由一键入库。
-- 下载记录可追踪，便于回溯和排错。
-- 支持资源库快捷下载模式，可复用最近一次下载器与路径，降低高频操作成本。
+- 内置色花堂 / X1080X 采集任务。
+- 支持按游标智能增量与全量回填。
+- 支持版块过滤、并发控制、异常重试与采集后资源库导出。
 
-### 3. 多下载器统一接入
-- 统一下载适配层，当前支持：
-  - qBittorrent
-  - Transmission
-  - 迅雷
-  - CloudNAS / CloudDrive
-  - 115
-- 下载器配置热更新，无需重启整套服务。
+### 规则驱动自动下载
 
-### 4. Emby 深度联动与演员管理
-- 支持 Emby Webhook 增删事件处理。
-- Webhook 媒体详情链路内置重试机制，减少新媒体无详情通知，提升通知有效性。
-- 资源番号与媒体库匹配（含增量游标、批量匹配、松弛匹配逻辑）。
-- 支持 Emby 定时自动刷新。
-- 提供演员资料补全能力，可补全头像、简介、性别、TMDB ID 等资料。
-- 内置演员管理页（需先配置 Emby），支持演员搜索、随机/按序浏览、重名检测与 TMDB ID 展示。
-- 支持演员头像更换/上传、重命名、删除、简介更新，并可同步作用到 Emby 全库。
-- 演员映射表支持在线检查、自动更新、导入导出、清除重建与 TMDB ID 唯一性校验，降低错误匹配概率。
+- 按版块、分类、关键字和时间窗口筛选资源。
+- 规则可指定下载器与保存目录，任务触发后自动提交下载。
+- 支持下载记录追踪与快捷下载模式。
 
-### 5. 可观测任务调度
-- 基于 APScheduler 的 Cron 调度系统。
-- 任务支持：新增、编辑、启停、立即执行、运行中状态追踪。
-- 具备最小调度间隔保护（防止高频误触发）和线程数规范化。
-- 支持资源库自动更新检查（默认每 12 小时）与在线手动检查更新，减少版本滞后风险。
-- 支持资源库自动导出与手动导出，导出文件带时间戳，并可在采集完成后自动刷新上传。
-- GitHub 工作流可自动触发资源库上传更新，降低对本地 Cron 的依赖；网络设置中可配置 API Token 以提高请求限额。
-- 关于页提供运行日志查看，支持实时 SSE 与轮询兜底，便于排查长期任务问题。
+### 多下载器统一接入
 
-### 6. 通知中心（模板化推送）
-- 支持 Telegram / 企业微信通知。
-- Telegram 支持轮询和 Webhook 推送
-- 支持模板消息、图片链接、按通知器开关控制。
-- 下载完成与 Emby 事件可联动推送。
-- Telegram Bot 支持 115 链接转存、工具菜单操作、刷新番号/媒体库、版本更新检测等常用远程操作。
+- 支持 qBittorrent、Transmission、迅雷、CloudNAS / CloudDrive 与 115。
+- 下载器配置可即时更新，无需重启整套服务。
 
-### 7. 前后端一体化交付
-- 后端可直接托管前端构建产物（frontend/dist）。
-- 统一访问入口，简化部署与运维。
-- 内置图片代理、缓存与登录页海报墙能力。
-- 资源库已入库卡片支持快捷播放入口，缩短从浏览到播放的路径。
-- 支持图片预览、全屏放大、原图下载、同番号资源弹窗、资源过滤器持久化与 PWA 移动端适配。
-- 设置页配置从数据库实时读取，减少本地缓存导致的配置回写问题。
+### Emby 深度联动与演员管理
 
-## 技术栈
+- 支持媒体库匹配、Webhook、自动刷新和快捷播放入口。
+- 可补齐演员头像、简介、性别、TMDB ID 等资料。
+- 提供演员搜索、重名检测、头像管理、重命名、删除与映射表维护工具。
 
-- 后端：FastAPI, SQLAlchemy, APScheduler
-- 数据库：PostgreSQL（推荐）/ SQLite（可选）
-- 前端：React + Vite + TanStack Router + Tailwind CSS（独立仓库 Avdb-UI）
-- 下载协议与三方集成：qBittorrent、Transmission、迅雷、CloudDrive/115、Emby
+### 可观测任务调度
 
-## 数据库配置（PostgreSQL / SQLite）
+- 基于 APScheduler 的 Cron 任务系统，支持新增、编辑、启停、立即执行与运行状态追踪。
+- 支持资源库自动导出、在线更新检查与运行日志查看。
 
-项目支持 PostgreSQL 与 SQLite 两种数据库。
+### 通知中心
 
-- 推荐 PostgreSQL（并发与维护能力更好）。
-- 轻量部署或单机测试可直接使用 SQLite。
+- 支持 Telegram / 企业微信通知、模板消息和事件开关。
+- 下载完成与 Emby 媒体新增、删除事件均可联动推送。
 
-当同时配置了 `DATABASE_URL` 与 `POSTGRES_*` 时，优先使用 `DATABASE_URL`。
+### 前后端一体化与移动端适配
 
-### PostgreSQL 示例
+- 后端直接托管前端构建产物，统一访问入口。
+- 支持图片代理与缓存、登录页海报墙、图片预览与下载、PWA 移动端适配。
 
-```env
-POSTGRES_HOST=10.0.0.8
-POSTGRES_PORT=5433
-POSTGRES_USER=avdb
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=avdb
-DATABASE_URL=postgresql://avdb:your_password@10.0.0.3:5433/avdb
-```
+## 文档与指南
 
-### SQLite 示例
+详细配置、部署和维护文档均在 Wiki：
 
-```env
-# 使用 SQLite 时，直接填写 DATABASE_URL 即可
-DATABASE_URL=sqlite:///./data/avdb.db
+| 文档 | 内容 |
+| --- | --- |
+| [Avdb 使用指南](https://github.com/li-peifeng/AVdb-Only/wiki) | 全部页面、功能说明与使用路径。 |
+| [安装与部署指南](https://github.com/li-peifeng/AVdb-Only/wiki/%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97) | Docker Compose、容器作用、端口、数据卷与部署检查。 |
+| [更新日志](https://github.com/li-peifeng/AVdb-Only/wiki/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97) | 版本更新历史。 |
 
-# 可留空（或移除）POSTGRES_* 配置
-POSTGRES_HOST=
-POSTGRES_PORT=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-```
-
-### 切换建议
-
-- 从 PostgreSQL 切到 SQLite：建议使用独立数据库文件，避免混用旧数据。
-- 从 SQLite 切到 PostgreSQL：建议先全量导出/迁移数据后再切换生产环境。
-- 首次切换后，建议启动一次服务并观察日志中数据库方言输出是否符合预期。
-
-## Docker Compose 部署示例
-
-如果你使用 Docker 部署，推荐使用下面两种 compose 方式之一。
-
-### 方式 1：SQLite（最简单）
-
-```yaml
-services:
-  avdb:
-    image: leolitaly/avdb:latest
-    container_name: avdb
-    network_mode: bridge
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/data
-    environment:
-      - DATABASE_URL=sqlite:////data/avdb.db
-```
-
-### 方式 2：PostgreSQL（推荐使用）
-
-```yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
-    restart: unless-stopped
-    environment:
-      - POSTGRES_USER=avdb
-      - POSTGRES_PASSWORD=change_me
-      - POSTGRES_DB=avdb
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-
-  avdb:
-    image: leolitaly/avdb:latest
-    container_name: avdb
-    restart: unless-stopped
-    depends_on:
-      - postgres
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./data:/data
-    environment:
-      - DATABASE_URL=postgresql://avdb:change_me@postgres:5432/avdb
-      # 下面这组可留空；若同时配置，程序优先使用 DATABASE_URL
-      - POSTGRES_HOST=
-      - POSTGRES_PORT=
-      - POSTGRES_USER=
-      - POSTGRES_PASSWORD=
-      - POSTGRES_DB=
-```
-
-提示：首次启动后可在日志中确认（sqlite/postgresql）是否符合预期。
-
-仓库已内置可直接运行的 [docker-compose.yml](docker-compose.yml)：
-
-## 典型使用流程
-
-1. 配置下载器（qBittorrent/Transmission/迅雷/CloudDrive/115）
-2. 新建采集与入库任务（智能增量或全量）
-3. 配置规则并触发自动下载
-4. 打开 Emby 集成与 Webhook
-5. 进入演员管理，按需补全头像、简介、TMDB ID 或同步更新 Emby 演员资料
-6. 开启资源库自动导出/自动更新检查，保持在线资源库与本地数据同步
-7. 开启通知推送，接收入库与状态变更消息
-
-## 安全建议
-
-- 生产环境请关闭不必要的跨域配置并限制来源。
-- 使用强密码与独立数据库账号。
-- Webhook 建议开启签名或密钥校验。
-- 通过反向代理（如 Nginx）启用 HTTPS。
-
-## Telegram 交流群
-
-https://t.me/avdb_chat
-
-## 免责声明
-
-本项目仅用于个人学习与技术研究，请遵守当地法律法规及相关站点服务条款。
+**AVDB by LeoLi** · [Telegram：@avdb_chat](https://t.me/avdb_chat)

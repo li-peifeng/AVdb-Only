@@ -10,7 +10,7 @@ services:
       - ./data:/data
     environment:
       # 默认：SQLite（开箱即用）
-      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/avdb.db}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:////data/avdb.db}
 
       # PostgreSQL 示例（如需切换，取消注释并填写）
       # - DATABASE_URL=postgresql://avdb:change_me@postgres:5432/avdb
@@ -30,3 +30,31 @@ services:
       - POSTGRES_DB=avdb
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+
+  trawl:
+    image: ghcr.io/germondai/trawl:latest
+    container_name: trawl
+    restart: always
+    ports:
+      - "${PORT:-8191}:8191"
+    shm_size: 1gb
+    mem_limit: 4g
+    environment:
+      BROWSER_POOL_SIZE: 1
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://trawl:8191/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+      
+  redis:
+    image: redis:8.8-alpine
+    container_name: redis
+    restart: always
+    mem_limit: 1g
+    volumes:
+      - ./redis:/data
