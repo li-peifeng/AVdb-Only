@@ -59,4 +59,4 @@ Avdb 是面向个人影视资源管理的全流程自动化系统，覆盖「站
 | [安装与部署指南](https://github.com/li-peifeng/AVdb-Only/wiki/%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97) | Docker Compose、容器作用、端口、数据卷与部署检查。 |
 | [更新日志](https://github.com/li-peifeng/AVdb-Only/wiki/%E6%9B%B4%E6%96%B0%E6%97%A5%E5%BF%97) | 版本更新历史。 |
 
-**AVDB by LeoLi** · [Telegram：@avdb_chat](https://t.me/avdb_chat)
+**AVDB by LeoLi** · [Telegram：@avdb_chat](https://t.me/avdb_chat) ☕️ [爱发电](https://ifdian.net/a/leoavdb)
