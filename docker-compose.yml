@@ -1,16 +1,34 @@
 services:
   avdb:
-    image: leolitaly/avdb:latest
+    image: ${AVDB_UPDATE_IMAGE:-leolitaly/avdb:latest}
     container_name: avdb
     restart: unless-stopped
-    network_mode: bridge
+    networks:
+      - avdb
     ports:
       - 8000:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./data:/data
+      # 用于 MDC-NG 映射表覆盖后的容器重启。
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - ./data/app.env
     environment:
+      # 建议显式声明部署版本，供在线更新检测对比（示例：20260413-1513）
+      - APP_VERSION=${APP_VERSION:-}
+      # 自动更新目标镜像；正式部署可使用 latest，开发部署可改为 dev。
+      - AVDB_UPDATE_IMAGE=${AVDB_UPDATE_IMAGE:-leolitaly/avdb:latest}
+      # 自带更新 Sidecar 的内部地址和鉴权令牌；请在 .env 中替换默认令牌。
+      - AVDB_UPDATE_SIDECAR_URL=${AVDB_UPDATE_SIDECAR_URL:-http://avdb-updater:8080/v1/update}
+      - AVDB_UPDATE_SIDECAR_TOKEN=${AVDB_UPDATE_SIDECAR_TOKEN:-}
       # 默认：SQLite（开箱即用）
       - DATABASE_URL=${DATABASE_URL:-sqlite:////data/avdb.db}
+
+      # Pillow 转换在一次性子进程中执行；默认最多同时转换 2 张图片
+      - IMAGE_CONVERSION_MAX_CONCURRENCY=${IMAGE_CONVERSION_MAX_CONCURRENCY:-2}
+      - IMAGE_CONVERSION_TIMEOUT_SECONDS=${IMAGE_CONVERSION_TIMEOUT_SECONDS:-180}
 
       # PostgreSQL 示例（如需切换，取消注释并填写）
       # - DATABASE_URL=postgresql://avdb:change_me@postgres:5432/avdb
@@ -20,41 +38,37 @@ services:
       # - POSTGRES_PASSWORD=change_me
       # - POSTGRES_DB=avdb
 
+  avdb-updater:
+    # Sidecar 镜像由 GitHub Actions 发布到 Docker Hub，部署机只负责拉取。
+    image: ${AVDB_UPDATER_IMAGE:-leolitaly/avdb-updater:latest}
+    container_name: avdb-updater
+    restart: unless-stopped
+    depends_on:
+      - avdb
+    networks:
+      - avdb
+    environment:
+      - SIDECAR_TOKEN=${AVDB_UPDATE_SIDECAR_TOKEN:-}
+      - SIDECAR_TARGET_CONTAINER=avdb
+      - SIDECAR_TARGET_IMAGE=${AVDB_UPDATE_IMAGE:-leolitaly/avdb:latest}
+      - DOCKER_API_VERSION=${DOCKER_API_VERSION:-v1.41}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   postgres:
     image: postgres:16
     container_name: avdb-postgres
+    profiles: ["postgres"]
+    networks:
+      - avdb
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=avdb
+      - POSTGRES_USER=${POSTGRES_USER:-avdb}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change_me}
+      - POSTGRES_DB=${POSTGRES_DB:-avdb}
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
 
-  trawl:
-    image: ghcr.io/germondai/trawl:latest
-    container_name: trawl
-    restart: always
-    ports:
-      - "${PORT:-8191}:8191"
-    shm_size: 1gb
-    mem_limit: 4g
-    environment:
-      BROWSER_POOL_SIZE: 1
-      REDIS_URL: redis://redis:6379
-    depends_on:
-      - redis
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://trawl:8191/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 90s
-      
-  redis:
-    image: redis:8.8-alpine
-    container_name: redis
-    restart: always
-    mem_limit: 1g
-    volumes:
-      - ./redis:/data
+networks:
+  avdb:
+    driver: bridge
