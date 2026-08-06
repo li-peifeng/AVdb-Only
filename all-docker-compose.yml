@@ -1,0 +1,116 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres
+    restart: always
+    volumes:
+      - ./postgres:/var/lib/postgresql
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "avdb"
+      # 以系统为准，下面是绿联的pgid和puid
+      PGID: "10"
+      PUID: "1000"
+      TZ: "Europe/Rome"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    mem_limit: 4G
+    networks:
+      - avdb_net
+      
+  avdb:
+    image: leolitaly/avdb:latest
+    container_name: avdb
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 8000:8000
+    volumes:
+      - ./avdb:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # 以系统为准，下面是绿联的pgid和puid
+      PGID: "10"
+      PUID: "1000"
+      # 时区，中国改成 Asia/Shanghai
+      TZ: "Europe/Rome"
+      # 数据库地址
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/avdb"
+      # 自动更新端地址，保持默认即可
+      AVDB_UPDATE_SIDECAR_URL: "${AVDB_UPDATE_SIDECAR_URL:-http://avdb-updater:8080/v1/update}"
+      # 自动更新随机密钥，需要自己设置
+      AVDB_UPDATE_SIDECAR_TOKEN: "${AVDB_UPDATE_SIDECAR_TOKEN:-}"
+      # 自动更新版本
+      AVDB_UPDATE_IMAGE: "${AVDB_UPDATE_IMAGE:-leolitaly/avdb:latest}"
+      # api 版本，一般不需要改动
+      DOCKER_API_VERSION: "v1.41"
+      # 应用版本号，保持默认即可
+      APP_VERSION: "${APP_VERSION:-}"
+    mem_limit: 4G
+    networks:
+      - avdb_net
+
+  avdb-updater:
+    image: leolitaly/avdb-updater:latest
+    container_name: avdb-updater
+    restart: unless-stopped
+    depends_on:
+      - avdb
+    environment:
+      # 自动更新随机密钥，需要自己设置
+      SIDECAR_TOKEN: "${AVDB_UPDATE_SIDECAR_TOKEN:-}"
+      # 目标容器名称
+      SIDECAR_TARGET_CONTAINER: "avdb"
+      # 目标镜像名称
+      SIDECAR_TARGET_IMAGE: "${AVDB_UPDATE_IMAGE:-leolitaly/avdb:latest}"
+      # DOCKER API 版本，一般不需要改动
+      DOCKER_API_VERSION: "v1.41"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    mem_limit: 512M
+    networks:
+      - avdb_net
+
+  trawl:
+    image: ghcr.io/germondai/trawl:latest
+    container_name: trawl
+    restart: always
+    ports:
+      - "${PORT:-8191}:8191"
+    shm_size: 1gb
+    mem_limit: 2g
+    environment:
+      BROWSER_POOL_SIZE: "1"
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://trawl:8191/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    networks:
+      - avdb_net
+      
+  redis:
+    image: redis:8.8-alpine
+    container_name: redis
+    restart: always
+    mem_limit: 1g
+    volumes:
+      - ./redis:/data
+    networks:
+      - avdb_net
+
+networks:
+  avdb_net:
+    external: true
