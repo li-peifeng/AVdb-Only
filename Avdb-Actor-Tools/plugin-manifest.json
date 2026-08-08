@@ -1,10 +1,10 @@
 {
   "PluginId": "b4f56d82-4d96-4d50-8ab4-cf0d6f20a1d4",
-  "Version": "3.0.1",
+  "Version": "3.1.1",
   "FileName": "Avdb.ActorTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/main/Avdb-Actor-Tools/Avdb.ActorTools.Plugin.dll",
-  "Sha256": "9c5bf70e66a7c1079c3719cb2633549c8fbb77605e945b05e63fb1a0e4352f5a",
+  "Sha256": "7fd803b027898aa1f4c54002dbdfb51689cc48f861ed0dc5260a9226d14ebcac",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "测试插件自动更新链路；默认不设置自动触发器，支持用户配置触发器或手动运行；保留 GUID、程序集版本和 SHA-256 校验、DLL 备份、替换及自重启流程。",
+  "ReleaseNotes": "新增 Emby 活动记录提示：已是最新版本、发现更新、更新完成、取消和失败都会留下可见记录；默认不设置自动触发器，支持用户配置触发器或手动运行。",
   "PublishedAt": "2026-08-08"
 }
