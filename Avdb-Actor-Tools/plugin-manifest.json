@@ -1,10 +1,10 @@
 {
   "PluginId": "b4f56d82-4d96-4d50-8ab4-cf0d6f20a1d4",
-  "Version": "3.0.0",
+  "Version": "3.0.1",
   "FileName": "Avdb.ActorTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/main/Avdb-Actor-Tools/Avdb.ActorTools.Plugin.dll",
-  "Sha256": "4c987e13df428e018e69a65fa04487a8989bf97fa07ed81a8d00f4ff220134b3",
+  "Sha256": "9c5bf70e66a7c1079c3719cb2633549c8fbb77605e945b05e63fb1a0e4352f5a",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "修复 Emby IHttpClient 下载时缺少 Progress 导致计划任务失败的问题；默认不设置自动触发器，支持用户配置触发器或手动运行；保留 GUID、程序集版本和 SHA-256 校验、DLL 备份、替换及自重启流程。",
+  "ReleaseNotes": "测试插件自动更新链路；默认不设置自动触发器，支持用户配置触发器或手动运行；保留 GUID、程序集版本和 SHA-256 校验、DLL 备份、替换及自重启流程。",
   "PublishedAt": "2026-08-08"
 }
