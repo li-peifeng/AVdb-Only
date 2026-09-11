@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.9.10.221",
+  "Version": "2026.9.11.222",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "c8ac6a5b19610d5ad11f26d3c3076e5be379fe6988500f3be27327f393fea2b7",
+  "Sha256": "c9a78f1a4679d60ff85157b62915a6fda5c648ac250f4cb5b57699603a7f8755",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "JavDB 评分即时请求与批量计划任务共用 Avdb 持久化缓存，缓存记录 cached_at 并在 10 天后过期；查询到有效评分时维护已有 NFO 的 ratings/rating name=javdb 五分制节点，同时按 movie.score×2 写入 Emby CommunityRating。评分同步任务默认改为每周日 03:30，保留 Run Now；无评分、匹配失败、账号失效或请求/保存失败时保留原值。继续串行化 Emby SQLite 评分写入并完善批量进度上报。",
-  "PublishedAt": "2026-09-10T00:54:11Z"
+  "ReleaseNotes": "修复欧美影片点号日期番号识别：NFO、标题、文件名和目录名支持 Blacked.16.07.09 等格式，并按 AVDB 规则规范化两位年份后请求 JavDB 剧照；保留原有番号格式和剧照补全逻辑。",
+  "PublishedAt": "2026-09-11T14:51:48Z"
 }
