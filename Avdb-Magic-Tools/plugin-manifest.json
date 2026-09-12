@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.9.11.222",
+  "Version": "2026.9.12.223",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "c9a78f1a4679d60ff85157b62915a6fda5c648ac250f4cb5b57699603a7f8755",
+  "Sha256": "7bad819d7d1ad74e2fb00344235b639a933a9f22af9666c150a7cd3dc3176725",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "修复欧美影片点号日期番号识别：NFO、标题、文件名和目录名支持 Blacked.16.07.09 等格式，并按 AVDB 规则规范化两位年份后请求 JavDB 剧照；保留原有番号格式和剧照补全逻辑。",
-  "PublishedAt": "2026-09-11T14:51:48Z"
+  "ReleaseNotes": "新增“添加新媒体时自动下载剧照”开关：开启后，所选媒体库中新加入的视频会按番号检索 JavDB 并补充剧照；已有附加剧照会保留，不受覆盖设置影响。该功能独立于详情页按需补全和计划任务。",
+  "PublishedAt": "2026-09-12T15:54:50Z"
 }
