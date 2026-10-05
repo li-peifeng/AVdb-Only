@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.9.20.225",
+  "Version": "2026.10.5.226",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "e4d0d688b04d39858e7c36c57727f5c7d933ce8526cefc66a649c07c965bf9fe",
+  "Sha256": "2372ee3269360707abfd7a40e0c0831ceb7f17c84a76a13fc23c13a1bac2f556",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "批量图片补全任务会随项目扫描和处理逐项更新进度，避免进度长时间停留在 0%。",
-  "PublishedAt": "2026-09-20T14:44:51Z"
+  "ReleaseNotes": "影片剧照按文件名中的数字自然排序，例如 fanart1、fanart2、fanart10；缩略图和放大查看使用相同顺序。",
+  "PublishedAt": "2026-10-05T15:16:58Z"
 }
