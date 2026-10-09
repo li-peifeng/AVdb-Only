@@ -1,6 +1,6 @@
 # Avdb Magic Tools
 
-插件版本：`2026.10.5.226`
+插件版本：`2026.10.9.227`
 
 这是一个面向 Avdb 演员管理的 Emby 插件，提供演员实体删除、按人物 ID 转移影片演员关联，
 以及 Emby 客户端影片详情页 `extrafanart` 剧照、演员详情写真、首页每日推荐横幅和演员墙。
@@ -223,21 +223,18 @@ Emby `emby-scroller`，并强制使用原生水平滚动；即使旧版 Android 
 
 ### 演员头像来源
 
-插件向 Emby 注册一个原生远程图片提供者 `Gfriends.Avdb`，只支持 `Person` 的主图。管理员在 Emby
-演员详情中打开“编辑图像 → 搜索”时，Emby 自带的 `TheMovieDb` 来源保持不变并继续由 Emby
-检索；选择 `Gfriends.Avdb` 来源时，插件按演员当前名称调用 AVDB 的 Gfriends 数据库索引，AVDB 负责
-数据库别名匹配并返回 CDN 优先的原图地址和索引中的宽高。插件不会通过 AVDB 重复请求 TMDB，也不会自动覆盖现有演员头像。
+插件向 Emby 注册两个原生远程图片提供者 `Gfriends.Avdb` 和 `Jalbum.Avdb`，只支持 `Person` 的主图。
+在演员详情中打开“编辑图像 → 搜索”，选择 `Gfriends.Avdb` 可获取演员头像，选择 `Jalbum.Avdb` 可从演员写真中选择主图。
+两种来源都按演员当前名称查询 Avdb 数据库索引，并由 Avdb 匹配演员别名。写真来源保留全部可用图片，包括文件夹封面图，
+不受写真显示或跳过写真封面图设置影响。选择、下载和保存由 Emby 原生远程图片流程完成。
 
-头像提供者由独立的 `EnableAvdbPersonImageProvider` 开关控制，默认关闭，不受写真显示开关
-影响。启用时与写真和影片剧照补全共用 `AvdbApiBaseUrl`，并额外要求管理员填写 `AvdbApiKey`。API Key 只由
-Emby 服务器以 `X-API-Key` 请求头发送给 AVDB，不进入 `Client/Config`、客户端功能脚本或图片
-地址。AVDB 返回的图片必须是 Gfriends 仓库的受信任 GitHub CDN 或 Raw 原图地址；AVDB 图片代理、跨域地址、Jalbum
-写真地址和其他路径都会被插件拒绝。插件优先直接获取 AVDB 索引返回的 CDN；AVDB 没有可用 CDN 候选时才返回 Raw；下载和保存仍由 Emby 原生
-远程图片流程完成。
+两个头像提供者共用 `EnableAvdbPersonImageProvider` 开关，默认关闭，不受写真显示开关影响。
+启用时需要填写 `AvdbApiBaseUrl` 和 `AvdbApiKey`。API Key 只由 Emby 服务器以 `X-API-Key` 请求头发送给 Avdb，
+不进入客户端功能脚本或图片地址，也不会发送给 GitHub CDN 或 Raw。头像和写真原图均直接使用索引返回的受信任原图地址。
+`Gfriends.Avdb` 仅接受 Gfriends 仓库图片，`Jalbum.Avdb` 仅接受 Jalbum 仓库图片；其他仓库、代理路径和无效地址会被拒绝。
 
-AVDB 搜索接口只返回数据库中已经记录的 Gfriends 原图宽高，插件直接填写 Emby 原生
-`RemoteImageInfo` 字段；不会在搜索请求内等待探测，也不会主动请求未选中的图片。尺寸字段不会
-进入客户端功能脚本，也不会把 API Key 写入图片地址；头像原图请求不经过 AVDB 图片代理。
+Gfriends 来源使用索引中已有的原图宽高；写真索引没有宽高时不伪造尺寸，也不会为了搜索而主动下载未选中的写真。
+Emby 自带的 `TheMovieDb` 来源继续独立工作，默认来源顺序仍在 Avdb 来源之前；插件不会自动覆盖现有演员头像。
 
 如果不使用 AVDB 头像来源，可以关闭独立开关并安装
 [龙王的头像来源插件](https://github.com/jzdxjk/Jav-Actors-Mapping/releases)。该外部插件与

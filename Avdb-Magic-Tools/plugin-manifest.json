@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.10.5.226",
+  "Version": "2026.10.9.227",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "2372ee3269360707abfd7a40e0c0831ceb7f17c84a76a13fc23c13a1bac2f556",
+  "Sha256": "f396700083ba05f3e0543fa4f4850ae1639138b7ea5edb1ff572479f928d4cbc",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "影片剧照按文件名中的数字自然排序，例如 fanart1、fanart2、fanart10；缩略图和放大查看使用相同顺序。",
-  "PublishedAt": "2026-10-05T15:16:58Z"
+  "ReleaseNotes": "演员修改图片新增 Jalbum.Avdb 写真来源，可从演员写真中选择头像；与 Gfriends.Avdb 共用头像来源开关和 Avdb 配置，不受写真显示开关影响。",
+  "PublishedAt": "2026-10-09T14:57:21Z"
 }
