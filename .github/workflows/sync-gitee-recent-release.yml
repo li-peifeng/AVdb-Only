@@ -92,8 +92,8 @@ jobs:
 
           shopt -s nullglob
           paths=("$asset_dir"/30D_*.zip)
-          if [[ "${#paths[@]}" -ne 2 ]]; then
-            echo "Expected exactly two 30D zip assets, found ${#paths[@]}" >&2
+          if [[ "${#paths[@]}" -ne 3 ]]; then
+            echo "Expected exactly three 30D zip assets, found ${#paths[@]}" >&2
             find "$asset_dir" -maxdepth 1 -type f -printf '%f\n' >&2
             exit 1
           fi
@@ -101,7 +101,7 @@ jobs:
           declare -A websites=()
           for path in "${paths[@]}"; do
             name="$(basename "$path")"
-            if [[ ! "$name" =~ ^30D_(sehuatang|X1080X)_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$ ]]; then
+            if [[ ! "$name" =~ ^30D_(sehuatang|X1080X|LTX)_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$ ]]; then
               echo "Unexpected 30D asset name: $name" >&2
               exit 1
             fi
@@ -112,26 +112,29 @@ jobs:
             fi
             websites[$website]=1
           done
-          [[ "${#websites[@]}" -eq 2 ]] || {
-            echo "The 30D release must contain both sehuatang and X1080X assets." >&2
+          [[ "${#websites[@]}" -eq 3 ]] || {
+            echo "The 30D release must contain sehuatang, X1080X and LTX assets." >&2
             exit 1
           }
 
           mapfile -t sorted_names < <(basename -a "${paths[@]}" | sort)
           name_1="${sorted_names[0]}"
           name_2="${sorted_names[1]}"
+          name_3="${sorted_names[2]}"
           names_fingerprint="$({ sha256sum "${paths[@]}"; } | sort | sha256sum | awk '{print $1}')"
 
           {
             echo "AVDB_CSV_ASSET_DIR=$asset_dir"
             echo "AVDB_CSV_NAME_1=$name_1"
             echo "AVDB_CSV_NAME_2=$name_2"
+            echo "AVDB_CSV_NAME_3=$name_3"
             echo "AVDB_CSV_NAMES_FINGERPRINT=$names_fingerprint"
           } >> "$GITHUB_ENV"
 
           {
             echo "name_1=$name_1"
             echo "name_2=$name_2"
+            echo "name_3=$name_3"
             echo "names_fingerprint=$names_fingerprint"
           } >> "$GITHUB_OUTPUT"
 
@@ -158,7 +161,7 @@ jobs:
 
           if [[ "$release_missing" == '1' ]]; then
             body_file="$RUNNER_TEMP/gitee-release-payload.json"
-            python3 - "$body_file" "$AVDB_CSV_RELEASE_TAG" "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAMES_FINGERPRINT" <<'PY'
+            python3 - "$body_file" "$AVDB_CSV_RELEASE_TAG" "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3" "$AVDB_CSV_NAMES_FINGERPRINT" <<'PY'
           import json
           import sys
           from pathlib import Path
@@ -167,7 +170,8 @@ jobs:
           tag = sys.argv[2]
           name_1 = sys.argv[3]
           name_2 = sys.argv[4]
-          fingerprint = sys.argv[5]
+          name_3 = sys.argv[5]
+          fingerprint = sys.argv[6]
           body = (
               'AVdb 资源库 30 天增量更新文件镜像。\n\n'
               '本 Release 只同步30天增量文件；全量文件仍只发布在 GitHub。\n\n'
@@ -175,6 +179,7 @@ jobs:
               '同步文件：\n'
               f'- `{name_1}`\n'
               f'- `{name_2}`\n'
+              f'- `{name_3}`\n'
           )
           payload_path.write_text(
               json.dumps(
@@ -232,7 +237,7 @@ jobs:
               "$api_root/releases/$AVDB_GITEE_RELEASE_ID/attach_files/$asset_id"
           done
 
-          for asset_name in "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2"; do
+          for asset_name in "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3"; do
             curl --fail-with-body --retry 3 --retry-delay 1 \
               -H "Authorization: Bearer $GITEE_TOKEN" \
               -F "file=@$AVDB_CSV_ASSET_DIR/$asset_name;filename=$asset_name" \
@@ -250,10 +255,10 @@ jobs:
             -H 'Accept: application/json' \
             "$api_root/releases/$AVDB_GITEE_RELEASE_ID/attach_files" > "$assets_json"
 
-          jq -e --arg name_1 "$AVDB_CSV_NAME_1" --arg name_2 "$AVDB_CSV_NAME_2" \
-            '([.[] | .name] | sort) == ([$name_1, $name_2] | sort)' \
+          jq -e --arg name_1 "$AVDB_CSV_NAME_1" --arg name_2 "$AVDB_CSV_NAME_2" --arg name_3 "$AVDB_CSV_NAME_3" \
+            '([.[] | .name] | sort) == ([$name_1, $name_2, $name_3] | sort)' \
             "$assets_json" >/dev/null || {
-            echo 'Gitee release assets do not exactly match the two 30D files.' >&2
+            echo 'Gitee release assets do not exactly match the three 30D files.' >&2
             jq -r '.[].name' "$assets_json" >&2
             exit 1
           }
@@ -266,7 +271,7 @@ jobs:
             echo "## AVdb-CSV 30D Gitee sync"
             echo
             echo "- GitHub release: $AVDB_CSV_RELEASE_TAG"
-            echo "- Assets: $AVDB_CSV_NAME_1, $AVDB_CSV_NAME_2"
+            echo "- Assets: $AVDB_CSV_NAME_1, $AVDB_CSV_NAME_2, $AVDB_CSV_NAME_3"
             echo "- SHA-256 fingerprint: $AVDB_CSV_NAMES_FINGERPRINT"
             echo "- Full All_ assets: not synchronized"
           } >> "$GITHUB_STEP_SUMMARY"
