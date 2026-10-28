@@ -92,8 +92,8 @@ jobs:
 
           shopt -s nullglob
           paths=("$asset_dir"/30D_*.zip)
-          if [[ "${#paths[@]}" -ne 3 ]]; then
-            echo "Expected exactly three 30D zip assets, found ${#paths[@]}" >&2
+          if [[ "${#paths[@]}" -ne 4 ]]; then
+            echo "Expected exactly four 30D zip assets, found ${#paths[@]}" >&2
             find "$asset_dir" -maxdepth 1 -type f -printf '%f\n' >&2
             exit 1
           fi
@@ -101,7 +101,7 @@ jobs:
           declare -A websites=()
           for path in "${paths[@]}"; do
             name="$(basename "$path")"
-            if [[ ! "$name" =~ ^30D_(sehuatang|X1080X|LTX)_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$ ]]; then
+            if [[ ! "$name" =~ ^30D_(sehuatang|X1080X|LTX|FTAV)_[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}\.zip$ ]]; then
               echo "Unexpected 30D asset name: $name" >&2
               exit 1
             fi
@@ -112,8 +112,8 @@ jobs:
             fi
             websites[$website]=1
           done
-          [[ "${#websites[@]}" -eq 3 ]] || {
-            echo "The 30D release must contain sehuatang, X1080X and LTX assets." >&2
+          [[ "${#websites[@]}" -eq 4 ]] || {
+            echo "The 30D release must contain sehuatang, X1080X, LTX and FTAV assets." >&2
             exit 1
           }
 
@@ -121,6 +121,7 @@ jobs:
           name_1="${sorted_names[0]}"
           name_2="${sorted_names[1]}"
           name_3="${sorted_names[2]}"
+          name_4="${sorted_names[3]}"
           names_fingerprint="$({ sha256sum "${paths[@]}"; } | sort | sha256sum | awk '{print $1}')"
 
           {
@@ -128,6 +129,7 @@ jobs:
             echo "AVDB_CSV_NAME_1=$name_1"
             echo "AVDB_CSV_NAME_2=$name_2"
             echo "AVDB_CSV_NAME_3=$name_3"
+            echo "AVDB_CSV_NAME_4=$name_4"
             echo "AVDB_CSV_NAMES_FINGERPRINT=$names_fingerprint"
           } >> "$GITHUB_ENV"
 
@@ -135,6 +137,7 @@ jobs:
             echo "name_1=$name_1"
             echo "name_2=$name_2"
             echo "name_3=$name_3"
+            echo "name_4=$name_4"
             echo "names_fingerprint=$names_fingerprint"
           } >> "$GITHUB_OUTPUT"
 
@@ -161,7 +164,7 @@ jobs:
 
           if [[ "$release_missing" == '1' ]]; then
             body_file="$RUNNER_TEMP/gitee-release-payload.json"
-            python3 - "$body_file" "$AVDB_CSV_RELEASE_TAG" "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3" "$AVDB_CSV_NAMES_FINGERPRINT" <<'PY'
+            python3 - "$body_file" "$AVDB_CSV_RELEASE_TAG" "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3" "$AVDB_CSV_NAME_4" "$AVDB_CSV_NAMES_FINGERPRINT" <<'PY'
           import json
           import sys
           from pathlib import Path
@@ -171,7 +174,8 @@ jobs:
           name_1 = sys.argv[3]
           name_2 = sys.argv[4]
           name_3 = sys.argv[5]
-          fingerprint = sys.argv[6]
+          name_4 = sys.argv[6]
+          fingerprint = sys.argv[7]
           body = (
               'AVdb 资源库 30 天增量更新文件镜像。\n\n'
               '本 Release 只同步30天增量文件；全量文件仍只发布在 GitHub。\n\n'
@@ -180,6 +184,7 @@ jobs:
               f'- `{name_1}`\n'
               f'- `{name_2}`\n'
               f'- `{name_3}`\n'
+              f'- `{name_4}`\n'
           )
           payload_path.write_text(
               json.dumps(
@@ -237,7 +242,7 @@ jobs:
               "$api_root/releases/$AVDB_GITEE_RELEASE_ID/attach_files/$asset_id"
           done
 
-          for asset_name in "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3"; do
+          for asset_name in "$AVDB_CSV_NAME_1" "$AVDB_CSV_NAME_2" "$AVDB_CSV_NAME_3" "$AVDB_CSV_NAME_4"; do
             curl --fail-with-body --retry 3 --retry-delay 1 \
               -H "Authorization: Bearer $GITEE_TOKEN" \
               -F "file=@$AVDB_CSV_ASSET_DIR/$asset_name;filename=$asset_name" \
@@ -255,14 +260,67 @@ jobs:
             -H 'Accept: application/json' \
             "$api_root/releases/$AVDB_GITEE_RELEASE_ID/attach_files" > "$assets_json"
 
-          jq -e --arg name_1 "$AVDB_CSV_NAME_1" --arg name_2 "$AVDB_CSV_NAME_2" --arg name_3 "$AVDB_CSV_NAME_3" \
-            '([.[] | .name] | sort) == ([$name_1, $name_2, $name_3] | sort)' \
+          jq -e --arg name_1 "$AVDB_CSV_NAME_1" --arg name_2 "$AVDB_CSV_NAME_2" --arg name_3 "$AVDB_CSV_NAME_3" --arg name_4 "$AVDB_CSV_NAME_4" \
+            '([.[] | .name] | sort) == ([$name_1, $name_2, $name_3, $name_4] | sort)' \
             "$assets_json" >/dev/null || {
-            echo 'Gitee release assets do not exactly match the three 30D files.' >&2
+            echo 'Gitee release assets do not exactly match the four 30D files.' >&2
             jq -r '.[].name' "$assets_json" >&2
             exit 1
           }
           echo "Gitee 30D release synced: $AVDB_CSV_RELEASE_TAG"
+
+      - name: Retain only the synced Gitee resource release
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          api_root="$AVDB_GITEE_BASE_URL/api/v5/repos/$AVDB_GITEE_OWNER/$AVDB_GITEE_REPO"
+          release_records="$RUNNER_TEMP/gitee-resource-release-records.ndjson"
+          release_page="$RUNNER_TEMP/gitee-resource-release-page.json"
+          releases_json="$RUNNER_TEMP/gitee-resource-releases.json"
+          : > "$release_records"
+
+          # Collect every page before deleting, so pagination cannot skip releases.
+          page=1
+          while :; do
+            curl --fail-with-body --retry 3 --retry-delay 1 \
+              -H "Authorization: Bearer $GITEE_TOKEN" \
+              -H 'Accept: application/json' \
+              "$api_root/releases?per_page=100&page=$page" > "$release_page"
+            jq -e 'type == "array" and all(.[];
+              (.id | type == "number") and .id > 0 and .id == (.id | floor)
+              and (.tag_name | type == "string"))' "$release_page" >/dev/null
+            jq -c '.[]' "$release_page" >> "$release_records"
+            page_count="$(jq 'length' "$release_page")"
+            (( page_count == 100 )) || break
+            page=$((page + 1))
+          done
+          jq -s 'unique_by(.id)' "$release_records" > "$releases_json"
+
+          # Protect the release whose attachments passed verification above.
+          jq -e --argjson keep_id "$AVDB_GITEE_RELEASE_ID" --arg tag "$AVDB_CSV_RELEASE_TAG" \
+            'any(.[]; .id == $keep_id and .tag_name == $tag)' "$releases_json" >/dev/null || {
+            echo 'Verified Gitee resource release is missing; refusing cleanup.' >&2
+            exit 1
+          }
+          jq -r --argjson keep_id "$AVDB_GITEE_RELEASE_ID" \
+            '.[] | select(.id != $keep_id) | .id' "$releases_json" \
+            | while IFS= read -r release_id; do
+              echo "Removing old Gitee resource release: $release_id"
+              curl --fail-with-body --retry 3 --retry-delay 1 \
+                -H "Authorization: Bearer $GITEE_TOKEN" \
+                -X DELETE "$api_root/releases/$release_id"
+            done
+
+          curl --fail-with-body --retry 3 --retry-delay 1 \
+            -H "Authorization: Bearer $GITEE_TOKEN" \
+            -H 'Accept: application/json' \
+            "$api_root/releases?per_page=100&page=1" > "$release_page"
+          jq -e --argjson keep_id "$AVDB_GITEE_RELEASE_ID" --arg tag "$AVDB_CSV_RELEASE_TAG" \
+            'type == "array" and length == 1 and .[0].id == $keep_id and .[0].tag_name == $tag' \
+            "$release_page" >/dev/null || {
+            echo 'Gitee resource release cleanup did not leave exactly the synced release.' >&2
+            exit 1
+          }
 
       - name: Summary
         shell: bash
@@ -271,7 +329,8 @@ jobs:
             echo "## AVdb-CSV 30D Gitee sync"
             echo
             echo "- GitHub release: $AVDB_CSV_RELEASE_TAG"
-            echo "- Assets: $AVDB_CSV_NAME_1, $AVDB_CSV_NAME_2, $AVDB_CSV_NAME_3"
+            echo "- Assets: $AVDB_CSV_NAME_1, $AVDB_CSV_NAME_2, $AVDB_CSV_NAME_3, $AVDB_CSV_NAME_4"
             echo "- SHA-256 fingerprint: $AVDB_CSV_NAMES_FINGERPRINT"
             echo "- Full All_ assets: not synchronized"
+            echo "- Gitee resource releases retained: 1 (this synced release)"
           } >> "$GITHUB_STEP_SUMMARY"
