@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.11.6.228",
+  "Version": "2026.11.6.229",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "f0c3379d975cc1f626d5dfd3d3c3bc38f69292466597662a7b15f4ba6ce71fc2",
+  "Sha256": "350ccf3ac69ece58bcd92cb498e0344af65bd7b43e7479a63cbebf5e8d63d323",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "新增 NGi 刮削联动：管理员可在 Emby Web 视频右键或更多菜单中选择“使用 NGi 刮削”，创建 NGi 手动任务；支持 API 密钥与目录路径映射，以原地整理模式保留视频位置，需同时更新并启用 NGi 联动。",
-  "PublishedAt": "2026-11-06T18:09:17Z"
+  "ReleaseNotes": "修复“使用 NGi 刮削”在 Emby 中返回空结果、显示“无法确认提交结果”的问题；提交失败时显示具体的地址、鉴权、路径或网络错误，便于排查联动配置。",
+  "PublishedAt": "2026-11-06T18:49:50Z"
 }
