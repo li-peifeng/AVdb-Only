@@ -1,6 +1,6 @@
 services:
   avdb:
-    image: leolitaly/avdb:latest}
+    image: leolitaly/avdb:latest
     container_name: avdb
     restart: unless-stopped
     ports:
@@ -45,5 +45,5 @@ services:
       - avdb_net
 
 networks:
-  avdb:
+  avdb_net:
     driver: bridge
