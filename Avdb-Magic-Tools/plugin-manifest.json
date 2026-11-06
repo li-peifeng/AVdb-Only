@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.10.9.227",
+  "Version": "2026.11.6.228",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "f396700083ba05f3e0543fa4f4850ae1639138b7ea5edb1ff572479f928d4cbc",
+  "Sha256": "f0c3379d975cc1f626d5dfd3d3c3bc38f69292466597662a7b15f4ba6ce71fc2",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "演员修改图片新增 Jalbum.Avdb 写真来源，可从演员写真中选择头像；与 Gfriends.Avdb 共用头像来源开关和 Avdb 配置，不受写真显示开关影响。",
-  "PublishedAt": "2026-10-09T14:57:21Z"
+  "ReleaseNotes": "新增 NGi 刮削联动：管理员可在 Emby Web 视频右键或更多菜单中选择“使用 NGi 刮削”，创建 NGi 手动任务；支持 API 密钥与目录路径映射，以原地整理模式保留视频位置，需同时更新并启用 NGi 联动。",
+  "PublishedAt": "2026-11-06T18:09:17Z"
 }
