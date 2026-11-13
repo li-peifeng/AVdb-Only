@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://peifeng.li"><img width="184" alt="AVDB logo" src="../../public/logo.svg" /></a>
+  <a href="https://peifeng.li"><img width="184" alt="AVDB logo" src="../../../public/logo.svg" /></a>
 </p>
 <p align="center">
   <a href="https://hub.docker.com/r/leolitaly/avdb"><img src="https://img.shields.io/docker/pulls/leolitaly/avdb?color=%2348BB78&logo=docker&label=pulls" alt="Docker pulls" /></a>
@@ -9,6 +9,10 @@
 
 本目录提供一个交互式 Bash 工具，用于把 `AvdbMagicTools.js` Loader 注入 Emby 官方
 macOS 客户端或 Android APK，并完成副本制作、依赖检查、重新签名、打包和结果校验。
+
+[插件安装与配置](../README.md) · [插件更新日志](../CHANGELOG.md)
+
+本工具用于加载客户端中的插件网页功能。通过 Emby API 读取 NGi STRM 原片大小不需要客户端注入；直接访问 Emby 服务器自带的 Web 页面也由服务端插件处理注入。
 
 脚本默认在当前用户目录创建：
 
