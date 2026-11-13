@@ -1,6 +1,6 @@
 # Avdb Magic Tools
 
-插件版本：`2026.11.6.229`
+插件版本：`2026.11.13.230`
 
 这是一个面向 Avdb 演员管理的 Emby 插件，提供演员实体删除、按人物 ID 转移影片演员关联，
 以及 Emby 客户端影片详情页 `extrafanart` 剧照、演员详情写真、首页每日推荐横幅和演员墙。
@@ -23,6 +23,14 @@
 设置页将 AVDB 服务地址和 API Key 单独放在最后的“AVDB”标签；依赖 AVDB 的“图片”
 以及“演员”标签会在各自底部说明所需配置。预告片隐藏选项已并入“主题 & UI”标签。
 地址和 API Key 只由 Emby 服务器使用，不会写入客户端脚本或图片地址。
+
+### STRM 原片大小 API
+
+`2026.11.13.230` 新增 NGi NFO 原片大小读取接口。AVDB 仅使用现有 Emby 地址和管理员 API 密钥，即可将 STRM 原片大小用于“已入库”资源版本匹配，无需向 AVDB 映射或挂载媒体目录。
+
+插件在 Emby 端只读取 STRM 和旁边的同名 NFO（或 `movie.nfo`），核对文件名、STRM 原始字节摘要及 NGi 大小扩展；已合并的 STRM 版本分别返回大小，不求和。接口为管理员 `POST /Plugins/AvdbMagicTools/Items/StrmOriginalSizes`，请求为 `{"ItemIds":["123"]}`，每批最多 500 项；返回版本化的 `Items` 列表及各项 `Status`、`FileSizes` 和有效 NFO 番号 `Number`。
+
+需要 NGi 先生成带大小的 NFO，Emby 能读取现有 STRM/NFO 目录，以及 AVDB 支持此接口的新版后端。更新插件后在 AVDB 刷新 Emby 媒体库镜像即可；NFO 大小变更后同样需要刷新镜像。无需开启“STRM 媒体信息预提取”，无需让 Emby 或 AVDB 连接 CD2 原片目录，也不会请求播放链接、探测视频或改写文件。
 
 ### 使用 NGi 刮削
 
