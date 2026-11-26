@@ -2,6 +2,10 @@
 
 本日志记录插件的用户可见变化。插件通过独立 DLL 和发布清单更新；AVDB 应用 OTA 不会替换 Emby 中的插件。安装和配置见 [使用说明](README.md)，公开文件见 [发布目录](https://github.com/li-peifeng/AVdb-Only/tree/main/Avdb-Magic-Tools)。
 
+## 2026.11.26.231 · 2026-11-26
+
+- 「使用 NGi 刮削」会把 Emby 已识别的 CD1、CD2 等分集一起提交为一条手动任务。整组提交需要使用支持分集提交的 NGi。
+
 ## 2026.11.13.230 · 2026-11-13
 
 - 新增 NGi NFO 原片大小接口，AVDB 可通过现有 Emby 地址和管理员 API 密钥读取 STRM 原片大小，用于“已入库”资源版本匹配，无需向 AVDB 映射或挂载媒体目录。

@@ -1,10 +1,10 @@
 {
   "PluginId": "28abc939-6af7-44d1-99d3-7bc5e2d52610",
-  "Version": "2026.11.13.230",
+  "Version": "2026.11.26.231",
   "FileName": "Avdb.MagicTools.Plugin.dll",
   "DownloadUrl": "https://raw.githubusercontent.com/li-peifeng/AVdb-Only/refs/heads/main/Avdb-Magic-Tools/Avdb.MagicTools.Plugin.dll",
-  "Sha256": "0554fd84f11b17b17d6380c31f11173f1a5aa67943981c58cec53cc0c258b999",
+  "Sha256": "98f1b4439824ddbae0446691145e9675f8aca022015f77338fd8acd54cd8039a",
   "MinimumEmbyVersion": "4.8.0.0",
-  "ReleaseNotes": "新增 NGi NFO 原片大小接口，AVDB 仅连接 Emby API 即可进行 STRM“已入库”资源版本匹配，无需额外路径映射或媒体挂载；校验文件名和 STRM 摘要，独立返回各版本大小，不请求播放链接或探测原视频。",
-  "PublishedAt": "2026-11-13T00:05:50Z"
+  "ReleaseNotes": "「使用 NGi 刮削」会把 Emby 已识别的 CD1、CD2 等分集一起提交为一条手动任务。整组提交需要使用支持分集提交的 NGi。",
+  "PublishedAt": "2026-11-26T14:56:07Z"
 }

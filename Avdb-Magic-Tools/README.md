@@ -1,6 +1,6 @@
 # Avdb Magic Tools
 
-插件版本：`2026.11.13.230` · 最低 Emby 版本：`4.8.0.0`
+插件版本：`2026.11.26.231` · 最低 Emby 版本：`4.8.0.0`
 
 [更新日志](CHANGELOG.md) · [AVDB Wiki](https://github.com/li-peifeng/AVdb-Only/wiki/Emby插件) · [公开下载](https://github.com/li-peifeng/AVdb-Only/tree/main/Avdb-Magic-Tools)
 
@@ -54,12 +54,14 @@
 
 `2026.11.6.229` 修复 Emby 将异步提交结果返回为空的问题；地址、路径和鉴权错误会显示具体提示。路径映射左侧必须以影片详情中的实际媒体路径为准。
 
-需要包含 Emby 联动 API 的新版 NGi；只有新版 Magic Tools 而没有更新 NGi 时不能提交。
+单文件提交需要 NGi 的 Emby 联动 API，分集提交需要 NGi 支持接收整组媒体路径。
 
 1. 在 NGi 的“系统设置 → Emby / Magic Tools 联动”中填写允许刮削的媒体目录（NGi 中可见的绝对路径，每行一个），点击“启用并生成 API 密钥”。密钥仅显示一次。
 2. 在 Magic Tools 的“NGi 刮削”标签中启用菜单，填写 Emby 服务器可访问的 **NGi 网页地址及端口**和 API 密钥。默认 Docker Compose 示例为宿主机 `19448`、容器内 `19218`；本机开发网页端口为 `19318`。不要填写 Rust 后端端口。
 3. 两端路径不同时填写路径映射，每行 `Emby目录 => NGi目录`，例如 `/emby/movies => /media/movies` 或 `D:\Movies => /media/movies`。路径相同可留空。目录按完整前缀匹配，优先最长匹配。
 4. 保存设置并刷新 Emby Web。管理员在单个视频的右键、长按或“更多”菜单中点击 **使用 NGi 刮削**。NGi 创建手动任务，进度和失败原因在 NGi 的手动任务及刮削记录中查看。
+
+Magic Tools `2026.11.26.231` 起，Emby 已识别为同一影片的多个分集会一起提交为一条手动任务。每个分集都使用相同的路径映射规则。
 
 联动使用原地整理：保留视频路径及文件名，图片、NFO、字幕等依照 NGi 配置生成；联动任务关闭番号/图片/字幕失败后的媒体移动，避免 Emby 原路径失效。NGi 全局设置和既有任务不会被改写。已完成文件可再次刮削，正在处理的相同路径会被拦截或由队列跳过。STRM 提交文件本身，不读取其中的播放 URL。
 
